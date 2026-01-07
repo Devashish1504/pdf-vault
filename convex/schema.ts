@@ -13,9 +13,7 @@ export default defineSchema({
     userId: v.string(),
     filename: v.string(),
     originalName: v.string(),
-    storageId: v.optional(v.id("_storage")),
     isEncrypted: v.boolean(),
-    encryptedStorageId: v.optional(v.id("_storage")),
     createdAt: v.number(),
   }).index("by_user", ["userId"]),
 });

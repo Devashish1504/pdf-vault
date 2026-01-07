@@ -8,6 +8,7 @@ import pikepdf
 from dotenv import load_dotenv
 from functools import wraps
 import io
+from convex import ConvexClient
 
 load_dotenv()
 
@@ -18,11 +19,20 @@ app.secret_key = os.getenv('SECRET_KEY', 'fallback_secret_key')
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
 ALLOWED_EXTENSIONS = {'pdf'}
-CONVEX_URL = os.getenv('CONVEX_URL', '')
+CONVEX_URL = os.getenv('CONVEX_URL', 'https://industrious-bloodhound-246.convex.cloud')
 CLERK_PUBLISHABLE_KEY = os.getenv('CLERK_PUBLISHABLE_KEY', '')
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
+
+# Initialize Convex client
+convex_client = None
+if CONVEX_URL:
+    try:
+        convex_client = ConvexClient(CONVEX_URL)
+        print(f"Connected to Convex: {CONVEX_URL}")
+    except Exception as e:
+        print(f"Failed to connect to Convex: {e}")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
@@ -61,6 +71,31 @@ def get_user_processed_folder(user_id):
     os.makedirs(folder, exist_ok=True)
     return folder
 
+def save_file_to_convex(user_id, filename, original_name, is_encrypted=False):
+    """Save file metadata to Convex database"""
+    if convex_client and user_id and user_id != 'guest':
+        try:
+            convex_client.mutation("files:saveFile", {
+                "userId": user_id,
+                "filename": filename,
+                "originalName": original_name,
+                "isEncrypted": is_encrypted,
+            })
+            return True
+        except Exception as e:
+            print(f"Convex error: {e}")
+    return False
+
+def get_user_files_from_convex(user_id):
+    """Get user's files from Convex database"""
+    if convex_client and user_id and user_id != 'guest':
+        try:
+            files = convex_client.query("files:getUserFiles", {"userId": user_id})
+            return files or []
+        except Exception as e:
+            print(f"Convex query error: {e}")
+    return []
+
 @app.context_processor
 def inject_user():
     return {'current_user': get_current_user(), 'clerk_key': CLERK_PUBLISHABLE_KEY}
@@ -78,10 +113,25 @@ def auth_callback():
     """Handle Clerk authentication callback"""
     data = request.json
     if data and data.get('userId'):
+        user_id = data.get('userId')
+        email = data.get('email', '')
+        name = data.get('name', 'User')
+        
+        # Save user to Convex
+        if convex_client:
+            try:
+                convex_client.mutation("users:createUser", {
+                    "clerkId": user_id,
+                    "email": email,
+                    "name": name
+                })
+            except Exception as e:
+                print(f"Error saving user to Convex: {e}")
+        
         session['user'] = {
-            'id': data.get('userId'),
-            'email': data.get('email', ''),
-            'name': data.get('name', 'User')
+            'id': user_id,
+            'email': email,
+            'name': name
         }
         return jsonify({'success': True})
     return jsonify({'success': False}), 400
@@ -109,12 +159,11 @@ def upload_file():
             filename = secure_filename(file.filename)
             
             if user_id:
-                # Logged in user - save to user folder
                 user_folder = get_user_folder(user_id)
                 file.save(os.path.join(user_folder, filename))
+                save_file_to_convex(user_id, filename, file.filename, False)
                 flash(f'Uploaded: {filename}')
             else:
-                # Guest user - save temporarily
                 guest_folder = get_user_folder(None)
                 file.save(os.path.join(guest_folder, filename))
                 flash(f'Uploaded (Guest): {filename} - Login to save permanently')
@@ -152,7 +201,8 @@ def encrypt_pdf():
             
             with open(output_path, "wb") as f:
                 writer.write(f)
-                
+            
+            save_file_to_convex(user_id, output_filename, filename, True)
             flash(f'Encrypted: {output_filename}')
             uploaded_files = os.listdir(user_folder) if os.path.exists(user_folder) else []
             return render_template('encrypt.html', download_file=output_filename, uploaded_files=uploaded_files)
@@ -236,7 +286,6 @@ def admin_panel():
     if not session.get('admin_authenticated'):
         return render_template('admin_login.html')
     
-    # Show all users' files
     all_uploads = {}
     all_processed = {}
     
@@ -259,7 +308,6 @@ def download_file(folder, user_id, filename):
     user = get_current_user()
     current_user_id = user['id'] if user else 'guest'
     
-    # Users can only download their own files (or admin)
     if current_user_id != user_id and not session.get('admin_authenticated'):
         flash('Access denied')
         return redirect(url_for('index'))
@@ -281,10 +329,14 @@ def my_files():
     user_folder = get_user_folder(user_id)
     processed_folder = get_user_processed_folder(user_id)
     
+    # Get files from local storage
     uploads = os.listdir(user_folder) if os.path.exists(user_folder) else []
     processed = os.listdir(processed_folder) if os.path.exists(processed_folder) else []
     
-    return render_template('my_files.html', uploads=uploads, processed=processed, user_id=user_id)
+    # Also get from Convex for cloud sync info
+    convex_files = get_user_files_from_convex(user_id)
+    
+    return render_template('my_files.html', uploads=uploads, processed=processed, user_id=user_id, convex_files=convex_files)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
