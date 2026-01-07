@@ -3,6 +3,10 @@
 {% block content %}
 <div class="card">
     <h2>Upload PDF</h2>
+    {% if not current_user %}
+    <p class="guest-notice">You're in guest mode. Files will be temporary. <a href="/login">Login</a> to save
+        permanently.</p>
+    {% endif %}
     <form action="/upload" method="post" enctype="multipart/form-data">
         <label for="file">Select PDF File</label>
         <input type="file" name="file" id="file" accept=".pdf" required>

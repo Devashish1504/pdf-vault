@@ -3,6 +3,9 @@
 {% block content %}
 <div class="card">
     <h2>Encrypt PDF</h2>
+    {% if not uploaded_files %}
+    <p style="color: var(--muted);">No files uploaded yet. <a href="/upload">Upload a PDF</a> first.</p>
+    {% else %}
     <form action="/encrypt" method="post">
         <label for="filename">Select File</label>
         <select name="filename" id="filename" required>
@@ -17,12 +20,14 @@
 
         <button type="submit">Encrypt</button>
     </form>
+    {% endif %}
 
     {% if download_file %}
     <div class="success-box">
         <h3>Encryption Complete</h3>
         <p>Your encrypted file is ready.</p>
-        <a href="/download/processed/{{ download_file }}" class="download-link">Download {{ download_file }}</a>
+        <a href="/download/processed/{{ current_user.id if current_user else 'guest' }}/{{ download_file }}"
+            class="download-link">Download {{ download_file }}</a>
     </div>
     {% endif %}
 </div>

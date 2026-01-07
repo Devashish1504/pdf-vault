@@ -6,6 +6,53 @@
     --muted: #888;
     --border: #333;
     --danger: #ff4757;
+    --warning: #ffa502;
+}
+
+.auth-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    justify-content: center;
+}
+
+.auth-btn {
+    background: var(--accent);
+    color: #000;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.auth-btn.logout {
+    background: var(--danger);
+    color: #fff;
+}
+
+.user-info {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.guest-badge {
+    background: var(--warning);
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.guest-notice {
+    background: rgba(255, 165, 2, 0.1);
+    border: 1px solid var(--warning);
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 16px;
+    color: var(--warning);
 }
 
 * {

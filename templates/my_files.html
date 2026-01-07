@@ -2,9 +2,9 @@
 
 {% block content %}
 <div class="card">
-    <h2>Admin Panel</h2>
+    <h2>My Files</h2>
 
-    <h3 style="color: var(--accent); margin-bottom: 12px;">Uploads</h3>
+    <h3 style="color: var(--accent); margin-bottom: 12px;">Uploaded Files</h3>
     <table>
         <thead>
             <tr>
@@ -16,11 +16,11 @@
             {% for file in uploads %}
             <tr>
                 <td>{{ file }}</td>
-                <td><a href="/download/uploads/{{ file }}">Download</a></td>
+                <td><a href="/download/uploads/{{ user_id }}/{{ file }}">Download</a></td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="2">No files</td>
+                <td colspan="2">No files uploaded</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -38,11 +38,11 @@
             {% for file in processed %}
             <tr>
                 <td>{{ file }}</td>
-                <td><a href="/download/processed/{{ file }}">Download</a></td>
+                <td><a href="/download/processed/{{ user_id }}/{{ file }}">Download</a></td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="2">No files</td>
+                <td colspan="2">No encrypted files</td>
             </tr>
             {% endfor %}
         </tbody>

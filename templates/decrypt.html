@@ -3,6 +3,9 @@
 {% block content %}
 <div class="card">
     <h2>Decrypt PDF</h2>
+    {% if not processed_files and not uploaded_files %}
+    <p style="color: var(--muted);">No encrypted files found. <a href="/encrypt">Encrypt a PDF</a> first.</p>
+    {% else %}
     <form action="/decrypt" method="post">
         <label for="filename">Select Encrypted File</label>
         <select name="filename" id="filename" required>
@@ -28,6 +31,7 @@
 
         <button type="submit">Decrypt</button>
     </form>
+    {% endif %}
 
     {% if success %}
     <div class="success-box">

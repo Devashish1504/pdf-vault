@@ -1,4 +1,4 @@
-.env
+# Ignore
 __pycache__/
 *.pyc
 uploads/
@@ -6,3 +6,7 @@ processed/
 .venv/
 venv/
 *.log
+
+.env.local
+
+node_modules

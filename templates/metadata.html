@@ -3,6 +3,9 @@
 {% block content %}
 <div class="card">
     <h2>Extract Metadata</h2>
+    {% if not uploaded_files %}
+    <p style="color: var(--muted);">No files uploaded yet. <a href="/upload">Upload a PDF</a> first.</p>
+    {% else %}
     <form action="/metadata" method="post">
         <label for="filename">Select File</label>
         <select name="filename" id="filename" required>
@@ -13,6 +16,7 @@
         </select>
         <button type="submit">Extract</button>
     </form>
+    {% endif %}
 
     {% if metadata %}
     <h3 style="margin-top: 24px; color: var(--accent);">Metadata Found</h3>
