@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDFVault</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>PDFVault</h1>
+            <p>PDF Security Testing Lab</p>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/upload">Upload</a>
+                <a href="/encrypt">Encrypt</a>
+                <a href="/decrypt">Decrypt</a>
+                <a href="/metadata">Metadata</a>
+                <a href="/admin">Admin</a>
+            </nav>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        <div class="card">
+            <h2>Welcome</h2>
+            <p>PDFVault is an educational security lab for learning about PDF document vulnerabilities.</p>
+        </div>
+
+        <div class="card">
+            <h2>Features</h2>
+            <p><strong>Upload</strong> – Store PDF files<br>
+                <strong>Encrypt</strong> – Password-protect PDFs<br>
+                <strong>Decrypt</strong> – Test password recovery<br>
+                <strong>Metadata</strong> – Extract hidden document info
+            </p>
+        </div>
+        {% endblock %}
+
+        <footer>
+            PDFVault – Educational Use Only
+        </footer>
+    </div>
+</body>
+
+</html>

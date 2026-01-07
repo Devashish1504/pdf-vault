@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Extract Metadata</h2>
+    <form action="/metadata" method="post">
+        <label for="filename">Select File</label>
+        <select name="filename" id="filename" required>
+            <option value="">Choose a file...</option>
+            {% for file in uploaded_files %}
+            <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Extract</button>
+    </form>
+
+    {% if metadata %}
+    <h3 style="margin-top: 24px; color: var(--accent);">Metadata Found</h3>
+    <div class="metadata-box">{% for key, value in metadata.items() %}{{ key }}: {{ value }}
+        {% endfor %}</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Encrypt PDF</h2>
+    <form action="/encrypt" method="post">
+        <label for="filename">Select File</label>
+        <select name="filename" id="filename" required>
+            <option value="">Choose a file...</option>
+            {% for file in uploaded_files %}
+            <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" placeholder="Enter password" required>
+
+        <button type="submit">Encrypt</button>
+    </form>
+
+    {% if download_file %}
+    <div class="success-box">
+        <h3>Encryption Complete</h3>
+        <p>Your encrypted file is ready.</p>
+        <a href="/download/processed/{{ download_file }}" class="download-link">Download {{ download_file }}</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

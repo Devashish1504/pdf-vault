@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Admin Login</h2>
+    <form action="/admin" method="post">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" placeholder="Enter admin password" required>
+        <button type="submit">Login</button>
+    </form>
+</div>
+{% endblock %}

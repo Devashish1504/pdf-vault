@@ -1,0 +1,51 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Admin Panel</h2>
+
+    <h3 style="color: var(--accent); margin-bottom: 12px;">Uploads</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in uploads %}
+            <tr>
+                <td>{{ file }}</td>
+                <td><a href="/download/uploads/{{ file }}">Download</a></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="2">No files</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3 style="color: var(--accent); margin: 24px 0 12px;">Encrypted Files</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in processed %}
+            <tr>
+                <td>{{ file }}</td>
+                <td><a href="/download/processed/{{ file }}">Download</a></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="2">No files</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

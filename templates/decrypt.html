@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Decrypt PDF</h2>
+    <form action="/decrypt" method="post">
+        <label for="filename">Select Encrypted File</label>
+        <select name="filename" id="filename" required>
+            <option value="">Choose a file...</option>
+            {% if processed_files %}
+            <optgroup label="Encrypted Files">
+                {% for file in processed_files %}
+                <option value="{{ file }}">{{ file }}</option>
+                {% endfor %}
+            </optgroup>
+            {% endif %}
+            {% if uploaded_files %}
+            <optgroup label="Uploads">
+                {% for file in uploaded_files %}
+                <option value="{{ file }}">{{ file }}</option>
+                {% endfor %}
+            </optgroup>
+            {% endif %}
+        </select>
+
+        <label for="password">Password</label>
+        <input type="text" name="password" id="password" placeholder="Enter password to test" required>
+
+        <button type="submit">Decrypt</button>
+    </form>
+
+    {% if success %}
+    <div class="success-box">
+        <h3>Access Granted</h3>
+        <p>Password "<strong>{{ password }}</strong>" is correct!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

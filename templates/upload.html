@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Upload PDF</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="file">Select PDF File</label>
+        <input type="file" name="file" id="file" accept=".pdf" required>
+        <button type="submit">Upload</button>
+    </form>
+</div>
+{% endblock %}
